@@ -37,6 +37,8 @@ Command | Explanation
 `c` | Request for the current color. Returned value is in the format `#RRGGBBWW`.
 `pXX` | Starts the program indicated by the hexadecimal number `XX`. If XX equals 0, any currently running program is stopped. Hence, the device supports a maximum of 255 programs. The device broadcasts the number of the new program, in the same format, to all connected clients.
 `r` | Requests the currently running program. Returned value is in the format `pXX`. Zero is returned if no program is running.
+`lXX` | If `XX` is `00`, this returns a comma-separated list of all the currently occupied program slots. If it is the number of an existing program, it returns the name of the program.
+`xXXY...Y` | If `XX` is the number of an existing program and `Y...Y` is not given, the device returns the code of the program. If `Y...Y` is set to `0` (not `\0`!), the program is deleted. If `Y...Y` is a string of text and there is currently no program at slot `XX`, the string will be set as the new program at program number `XX`.
 
 * If you want to turn the device off, simply send the color `#00000000` to the device.
 
