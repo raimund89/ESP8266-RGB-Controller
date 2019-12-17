@@ -11,13 +11,14 @@ Also note, I'm not responsible in any way for whatever you're doing with this so
 - [x] ArduinoOTA for easy updating
 - [x] Websocket communication using [WebSocketsServer](https://github.com/Links2004/arduinoWebSockets)
 - [ ] Built-in color sequence programs
-- [ ] Persistent color setting after power cycle
-- [ ] Settings page (for hostname, websocket port, reset wifi, etc.)
+- [ ] Persistent settings (hostname, color, bit-resolution, OTA-name, scripts, pin assignments, etc.)
+- [ ] Settings page (for hostname, websocket port, reset wifi, scripting, etc.)
 - [ ] Scripting custom color sequence programs
 - [ ] Test support for ESP32
 - [ ] Color sequences to indicate status
 - [ ] IR remote support
 - [ ] Structuring code (separate GPIO, color and programs)
+- [ ] Support for 10-bit colors (as Espressif chips can do that). *Could do this by allocating an additional byte for each color in the upper half of the unsigned long.*
 
 ## Installing
 The code is written using the Arduino IDE, and that is the easiest way to compile and upload the code. For instructions on how to add the Espressif boards to the Arduino IDE, take a look at https://github.com/esp8266/Arduino. Also, you will need two libraries, WiFiManager (by **tzapu**) and WebSockets (by **Markus Sattler**). Both can be installed from the Library Manager in the Arduino IDE (Menu Sketch -> Include Library -> Manage Libraries).
@@ -32,7 +33,51 @@ To test the device you can use the [Simple WebSocket Client](https://chrome.goog
 
 Command | Explanation
 ------------ | -------------
-`#RRGGBBWW` | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (RR), green (GG), blue (BB) and white (WW). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red and green set to zero.* The device broadcasts the new color, in the same format, to all connected clients.
+`#RRGGBBWW` | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (`RR`), green (`GG`), blue (`BB`) and white (`WW`). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red and green set to zero and blue and white set to max.* The device broadcasts the new color, in the same format, to all connected clients.
 `c` | Request for the current color. Returned value is in the format `#RRGGBBWW`.
 `pXX` | Starts the program indicated by the hexadecimal number `XX`. If XX equals 0, any currently running program is stopped. Hence, the device supports a maximum of 255 programs. The device broadcasts the number of the new program, in the same format, to all connected clients.
 `r` | Requests the currently running program. Returned value is in the format `pXX`. Zero is returned if no program is running.
+
+* If you want to turn the device off, simply send the color `#00000000` to the device.
+
+## Examples
+
+### Javascript
+In Javascript you can use the WebSocket class. An easy example, with just a textbox for sending and a `<div>` for output, would be the following. Replace the IP-address with the address of the device, and the port to the websocket port (default is 81).
+
+```javascript
+<!-- message form -->
+<form name="publish">
+  <input type="text" name="message">
+  <input type="submit" value="Send">
+</form>
+
+<!-- div with messages -->
+<div id="messages"></div>
+
+<script type='text/javascript'>
+    let socket = new WebSocket("wss://192.168.1.2:81");
+
+    // send message from the form
+    document.forms.publish.onsubmit = function() {
+      let outgoingMessage = this.message.value;
+
+      socket.send(outgoingMessage);
+      return false;
+    };
+
+    // message received - show the message in div#messages
+    socket.onmessage = function(event) {
+      let message = event.data;
+
+      let messageElem = document.createElement('div');
+      messageElem.textContent = message;
+      document.getElementById('messages').prepend(messageElem);
+    }
+</script>
+```
+
+### Android
+In Android I prefer working in Kotlin, but in Java it's pretty similar. You can use the Scarlet library (from Tinder), or directly use OkHttp3.
+
+**To be added**
