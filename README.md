@@ -16,7 +16,7 @@ Also note, I'm not responsible in any way for whatever you're doing with this so
 - [ ] Scripting custom color sequence programs
 - [ ] Test support for ESP32
 - [ ] Color sequences to indicate status
-- [ ] IR remote support
+- [ ] IR remote support (for some models)
 - [ ] Structuring code (separate GPIO, color and programs)
 - [ ] Support for 10-bit colors (as Espressif chips can do that). *Could do this by allocating an additional byte for each color in the upper half of the unsigned long.*
 
