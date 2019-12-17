@@ -12,7 +12,7 @@ Also note, I'm not responsible in any way for whatever you're doing with this so
 - [x] Websocket communication using [WebSocketsServer](https://github.com/Links2004/arduinoWebSockets)
 - [ ] Built-in color sequence programs
 - [ ] Persistent color setting after power cycle
-- [ ] Settings page (for hostname, reset wifi, etc.)
+- [ ] Settings page (for hostname, websocket port, reset wifi, etc.)
 - [ ] Scripting custom color sequence programs
 - [ ] Test support for ESP32
 - [ ] Color sequences to indicate status
@@ -24,5 +24,15 @@ The code is written using the Arduino IDE, and that is the easiest way to compil
 
 After that, download this repository in a separate folder and open the .ino file in the Arduino IDE. If your Espressif device is not yet configured to use ArduinoOTA, you need to upload the program once using an UART device. The board type needs to be set to either 'Generic ESP8266 Module' or 'Generic ESP8285 Module'. The program currently is about 350kB in size.
 
-**For the ESP8285 module.** Set the flash size to 1MB, with at least 350kB of OTA size. When scripting is added to the functionality, more FS-size will mean more space for scripts.
-**For the ESP8266 module.** Set the flash size to anything larger than 500kB
+- **For the ESP8285 module.** Set the flash size to 1MB, with at least 350kB of OTA size. When scripting is added to the functionality, more FS-size will mean more space for scripts.
+- **For the ESP8266 module.** Set the flash size to anything larger than or equal to 1MB, and an OTA size of at least 350kB.
+
+## Usage
+To test the device you can use the [Simple WebSocket Client](https://chrome.google.com/webstore/detail/simple-websocket-client/pfdhoblngboilpfeibdedpjgfnlcodoo) for Chrome/Chromium. All communication through the websocket is text-based. The following commands can be sent:
+
+Command | Explanation
+------------ | -------------
+#RRGGBBWW | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (RR), green (GG), blue (BB) and white (WW). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red and green set to zero.* The device broadcasts the new color, in this same format, to all connected clients.
+c | Request for the current color. Uses the format #RRGGBBWW.
+pXX | Starts the program indicated by the hexadecimal number XX. If XX equals 0, any currently running program is stopped. Hence, the device supports a maximum of 255 programs. The device broadcasts the number of the new program, in the same format, to all connected clients.
+r | Requests the currently running program. The code of the current program is returned in hexadecimal number. Zero is returned if no program is running.
