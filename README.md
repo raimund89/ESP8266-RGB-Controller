@@ -46,35 +46,39 @@ Command | Explanation
 In Javascript you can use the WebSocket class. An easy example, with just a textbox for sending and a `<div>` for output, would be the following. Replace the IP-address with the address of the device, and the port to the websocket port (default is 81).
 
 ```javascript
-<!-- message form -->
-<form name="publish">
-  <input type="text" name="message">
-  <input type="submit" value="Send">
-</form>
+<html>
+  <body>
+    <!-- message form -->
+    <form name="publish">
+      <input type="text" name="message">
+      <input type="submit" value="Send">
+    </form>
 
-<!-- div with messages -->
-<div id="messages"></div>
+    <!-- div with messages -->
+    <div id="messages"></div>
 
-<script type='text/javascript'>
-    let socket = new WebSocket("wss://192.168.1.2:81");
+    <script type='text/javascript'>
+        let socket = new WebSocket("wss://192.168.1.2:81");
 
-    // send message from the form
-    document.forms.publish.onsubmit = function() {
-      let outgoingMessage = this.message.value;
+        // send message from the form
+        document.forms.publish.onsubmit = function() {
+          let outgoingMessage = this.message.value;
 
-      socket.send(outgoingMessage);
-      return false;
-    };
+          socket.send(outgoingMessage);
+          return false;
+        };
 
-    // message received - show the message in div#messages
-    socket.onmessage = function(event) {
-      let message = event.data;
+        // message received - show the message in div#messages
+        socket.onmessage = function(event) {
+          let message = event.data;
 
-      let messageElem = document.createElement('div');
-      messageElem.textContent = message;
-      document.getElementById('messages').prepend(messageElem);
-    }
-</script>
+          let messageElem = document.createElement('div');
+          messageElem.textContent = message;
+          document.getElementById('messages').prepend(messageElem);
+        }
+    </script>
+  </body>
+</html>
 ```
 
 ### Android
