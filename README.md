@@ -32,7 +32,7 @@ To test the device you can use the [Simple WebSocket Client](https://chrome.goog
 
 Command | Explanation
 ------------ | -------------
-#RRGGBBWW | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (RR), green (GG), blue (BB) and white (WW). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red and green set to zero.* The device broadcasts the new color, in this same format, to all connected clients.
-c | Request for the current color. Uses the format #RRGGBBWW.
-pXX | Starts the program indicated by the hexadecimal number XX. If XX equals 0, any currently running program is stopped. Hence, the device supports a maximum of 255 programs. The device broadcasts the number of the new program, in the same format, to all connected clients.
-r | Requests the currently running program. The code of the current program is returned in hexadecimal number. Zero is returned if no program is running.
+`#RRGGBBWW` | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (RR), green (GG), blue (BB) and white (WW). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red and green set to zero.* The device broadcasts the new color, in the same format, to all connected clients.
+`c` | Request for the current color. Returned value is in the format `#RRGGBBWW`.
+`pXX` | Starts the program indicated by the hexadecimal number `XX`. If XX equals 0, any currently running program is stopped. Hence, the device supports a maximum of 255 programs. The device broadcasts the number of the new program, in the same format, to all connected clients.
+`r` | Requests the currently running program. Returned value is in the format `pXX`. Zero is returned if no program is running.
