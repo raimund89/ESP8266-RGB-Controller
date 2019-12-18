@@ -1,23 +1,8 @@
 #ifndef LC_GPIO
 #define LC_GPIO
 
-#include <Ticker.h>
-
-Ticker program_ticker;
-
-typedef struct {
-    byte r;
-    byte g;
-    byte b;
-    byte w;
-} Color;
-
-// Some default colors
-#define COLOR_BLACK {  0,   0,   0,   0}
-#define COLOR_RED   {255,   0,   0,   0}
-#define COLOR_GREEN {  0, 255,   0,   0}
-#define COLOR_BLUE  {  0,   0, 255,   0}
-#define COLOR_WHITE {  0,   0,   0, 255}
+#include "lc_colors.h"
+#include "lc_programs.h"
 
 // Pin definitions on an ESP8285 Magic Home type LED controller
 #define PWM_GREEN 5
@@ -27,7 +12,6 @@ typedef struct {
 
 void SetColor(Color c);
 Color GetColor();
-void Program_CycleColors(float);
 
 void InitGPIO()
 {
@@ -78,33 +62,6 @@ unsigned long GetColorHex() {
   c += analogRead(PWM_WHITE);
 
   return c;
-}
-
-void Tick_CycleColors() {
-  switch(GetColorHex()){
-    case 0xFF000000L:
-      SetColor(COLOR_GREEN);
-      break;
-    case 0x00FF0000L:
-      SetColor(COLOR_BLUE);
-      break;
-    case 0x0000FF00L:
-      SetColor(COLOR_RED);
-      break;
-    default:
-      // This will be called the first time, when the
-      // LEDs are still off after GPIO initialization
-      SetColor(COLOR_RED);
-      break;
-  }
-}
-
-void Program_CycleColors(float speed) {
-  program_ticker.attach(speed, Tick_CycleColors);
-}
-
-void Program_Clear() {
-  program_ticker.detach();
 }
 
 #endif
