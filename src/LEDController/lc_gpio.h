@@ -10,6 +10,8 @@
 #define PWM_BLUE  13
 #define PWM_WHITE 15
 
+Color currentColor;
+
 void SetColor(Color c);
 Color GetColor();
 unsigned long GetColorHex();
@@ -20,13 +22,13 @@ Ticker program_ticker;
 
 void Tick_CycleColors() {
   switch(GetColorHex()){
-    case 0xFF000000L:
+    case 0xFF00008000L:
       SetColor(COLOR_GREEN);
       break;
-    case 0x00FF0000L:
+    case 0x00FF008000L:
       SetColor(COLOR_BLUE);
       break;
-    case 0x0000FF00L:
+    case 0x0000FF8000L:
       SetColor(COLOR_RED);
       break;
     default:
@@ -60,40 +62,29 @@ void InitGPIO()
 }
 
 void SetColor(Color c) {
-  analogWrite(PWM_RED, c.r);
-  analogWrite(PWM_GREEN, c.g);
-  analogWrite(PWM_BLUE, c.b);
+  currentColor = c;
+
+  analogWrite(PWM_RED, c.r * (2*c.l/255));
+  analogWrite(PWM_GREEN, c.g * (2*c.l/255));
+  analogWrite(PWM_BLUE, c.b * (2*c.l/255));
   analogWrite(PWM_WHITE, c.w);
+
+  // TODO: Check whether the color was set right by reading it back
 }
 
-// In this case, the value of a long is used, where each byte is the color value.
-// Using a long means 64-bit. This is too much (32-bit is sufficient), but could
-// be used later for additional settings, or increasing the resolution to 10-bit.
 void SetColorHex(unsigned long c) {
-  analogWrite(PWM_RED, c >> 24);
-  analogWrite(PWM_GREEN, (c & 0x00FF0000L) >> 16);
-  analogWrite(PWM_BLUE, (c & 0x0000FF00L) >> 8);
-  analogWrite(PWM_WHITE, (c & 0x000000FFL));
+  Color color = {(c & 0xFF00000000L) >> 32, (c & 0x00FF000000L) >> 24, (c & 0x0000FF0000L) >> 16, (c & 0x000000FF00L) >> 8, (c & 0x00000000FFL)};
+
+  SetColor(color);
 }
 
 Color GetColor() {
-  Color c;
-  c.r = analogRead(PWM_RED);
-  c.g = analogRead(PWM_GREEN);
-  c.b = analogRead(PWM_BLUE);
-  c.w = analogRead(PWM_WHITE);
-
-  return c;
+  return currentColor;
 }
 
 unsigned long GetColorHex() {
-  unsigned long c = 0;
-  c += analogRead(PWM_RED) << 24;
-  c += analogRead(PWM_GREEN) << 16;
-  c += analogRead(PWM_BLUE) << 8;
-  c += analogRead(PWM_WHITE);
-
-  return c;
+  unsigned long color = (currentColor.r << 32) + (currentColor.g << 24) + (currentColor.b << 16) + (currentColor.l << 8) + (currentColor.w);
+  return color;
 }
 
 #endif

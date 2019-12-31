@@ -36,13 +36,13 @@ void configModeCallback(WiFiManager *manager) {
 
 void tick() {
   switch(GetColorHex()){
-    case 0xFF000000L:
+    case 0xFF00008000L:
       SetColor(COLOR_GREEN);
       break;
-    case 0x00FF0000L:
+    case 0x00FF008000L:
       SetColor(COLOR_BLUE);
       break;
-    case 0x0000FF00L:
+    case 0x0000FF8000L:
       SetColor(COLOR_RED);
       break;
     default:
