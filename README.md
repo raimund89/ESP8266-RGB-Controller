@@ -10,6 +10,8 @@ Also note, I'm not responsible in any way for whatever you're doing with this so
 - [x] WiFi access through [WiFiManager](https://github.com/tzapu/WiFiManager) for easy configuration
 - [x] ArduinoOTA for easy updating
 - [x] Websocket communication using [WebSocketsServer](https://github.com/Links2004/arduinoWebSockets)
+- [ ] Implement separate RGB and brightness setting
+- [ ] Save the color, don't read it back from the PWM channels
 - [ ] Built-in color sequence programs
 - [ ] Persistent settings (hostname, color, bit-resolution, OTA-name, scripts, pin assignments, etc.)
 - [ ] Settings page (for hostname, websocket port, reset wifi, scripting, etc.)
@@ -18,7 +20,7 @@ Also note, I'm not responsible in any way for whatever you're doing with this so
 - [ ] Color sequences to indicate status
 - [ ] IR remote support (for some models)
 - [ ] Structuring code (separate GPIO, color and programs)
-- [ ] Support for 10-bit colors (as Espressif chips can do that). *Could do this by allocating an additional byte for each color in the upper half of the unsigned long.*
+- [ ] Support for 10-bit colors (as Espressif chips can do that). *Could do this by allocating an additional 10 bits in the upper half of the unsigned long.*
 
 ## Installing
 The code is written using the Arduino IDE, and that is the easiest way to compile and upload the code. For instructions on how to add the Espressif boards to the Arduino IDE, take a look at https://github.com/esp8266/Arduino. Also, you will need two libraries, WiFiManager (by **tzapu**) and WebSockets (by **Markus Sattler**). Both can be installed from the Library Manager in the Arduino IDE (Menu Sketch -> Include Library -> Manage Libraries).
@@ -33,14 +35,14 @@ To test the device you can use the [Simple WebSocket Client](https://chrome.goog
 
 Command | Explanation
 ------------ | -------------
-`#RRGGBBWW` | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (`RR`), green (`GG`), blue (`BB`) and white (`WW`). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red and green set to zero and blue and white set to max.* The device broadcasts the new color, in the same format, to all connected clients.
-`c` | Request for the current color. Returned value is in the format `#RRGGBBWW`.
+`#RRGGBBLLWW` | Sends a color to the device in hexadecimal form in the range 0x00-0xFF for each color red (`RR`), green (`GG`), blue (`BB`), the color brightness (`LL`) and the separate white channel (`WW`). *Note:  you need to send the entire number. Sending for example 0xFFFF will result in red, green and blue set to zero and brightness and white set to max.* The device broadcasts the new color, in the same format, to all connected clients.
+`c` | Request for the current color. Returned value is in the format `#RRGGBBLLWW`.
 `pXX` | Starts the program indicated by the hexadecimal number `XX`. If XX equals 0, any currently running program is stopped. Hence, the device supports a maximum of 255 programs. The device broadcasts the number of the new program, in the same format, to all connected clients.
 `r` | Requests the currently running program. Returned value is in the format `pXX`. Zero is returned if no program is running.
 `lXX` | If `XX` is `00`, this returns a comma-separated list of all the currently occupied program slots. If it is the number of an existing program, it returns the name of the program.
 `xXXY...Y` | If `XX` is the number of an existing program and `Y...Y` is not given, the device returns the code of the program. If `Y...Y` is set to `0` (not `\0`!), the program is deleted. If `Y...Y` is a string of text and there is currently no program at slot `XX`, the string will be set as the new program at program number `XX`.
 
-* If you want to turn the device off, simply send the color `#00000000` to the device.
+* If you want to turn the device off, simply send the color `#0000000000` to the device.
 
 ## Examples
 
