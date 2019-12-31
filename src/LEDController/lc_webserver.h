@@ -28,12 +28,11 @@ void webSocketEvent(byte num, WStype_t type, uint8_t* payload, size_t length) {
   if(type == WStype_TEXT) {
     if(payload[0] == '#') {
       // They sent a color.
-      unsigned long rgbw = (unsigned long) strtoul((const char*)&payload[1], NULL, 16);
-      SetColorHex(rgbw);
-      websocket.broadcastTXT("#"+String(GetColorHex(), HEX));
+      SetColorHex(strtoull((const char*)&payload[1], NULL, 16));
+      websocket.broadcastTXT(ColorToString(currentColor).c_str());
     } else if(payload[0] == 'c') {
       // They want to know the current color.
-      websocket.sendTXT(num, "#"+String(GetColorHex(), HEX));
+      websocket.sendTXT(num, ColorToString(currentColor).c_str());
     } else if(payload[0] == 'p') {
       // They want to set a program.
 
